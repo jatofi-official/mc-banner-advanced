@@ -17,7 +17,17 @@
         </div>
 
         <div class="controls-section">
-            <h2>Layers</h2>
+            <div class="header-row">
+                <h2>Layers</h2>
+                <div class="toggle-container">
+                    <span>Vanilla</span>
+                    <label class="switch">
+                        <input type="checkbox" id="patternToggle" onchange="togglePatterns()">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Extra</span>
+                </div>
+            </div>
             <div id="layerContainer"></div>
         </div>
     </div>

@@ -20,8 +20,29 @@ const mcPalette = [
 // List your filenames here (ensure these exist in patterns/vanilla/ as .png)
 const patterns = ['none', "base","border","bricks","circle","creeper","cross","curly_border","diagonal_left","diagonal_right","diagonal_up_left","diagonal_up_right","flower","flow","globe","gradient","gradient_up","guster","half_horizontal_bottom","half_horizontal","half_vertical","half_vertical_right","mojang","piglin","rhombus","skull","small_stripes","square_bottom_left","square_bottom_right","square_top_left","square_top_right","straight_cross","stripe_bottom","stripe_center","stripe_downleft","stripe_downright","stripe_left","stripe_middle","stripe_right","stripe_top","triangle_bottom","triangles_bottom","triangles_top","triangle_top"];
 
-const extraPatterns = ["anchor","blam","castle","chequered","circle_tiles","clubs","cogs","companion","crown","curtains","diamonds","double_bars","double_gradient","emoji","eye","fancy","ghast","hammer","hearts","horn","knot","moon","palace","peace","pillager","pumpkin","pyramid","revolution","ribs","shield","spades","sun","sword","tattered","template","tower","trident","villager","yin_yang"];
+const extraPatterns = ["anchor","blam","castle","chequered","circle_tiles","clubs","cogs","companion","crown","curtains","diamonds","double_bars","double_gradient","emoji","eye","fancy","ghast","hammer","hearts","horn","knot","moon","palace","peace","pillager","pumpkin","pyramid","revolution","ribs","shield","spades","sun","sword","tattered","tower","trident","villager","yin_yang"];
 
+// State management
+let currentPatternSet = patterns; 
+let currentPath = 'patterns/vanilla/';
+
+/**
+ * Triggered by the HTML switch. 
+ * Combines Vanilla + Extra when checked.
+ */
+function togglePatterns() {
+    const isExtra = document.getElementById('patternToggle').checked;
+    
+    // Merge the arrays if extra is checked
+    currentPatternSet = isExtra ? [...patterns, ...extraPatterns] : patterns;
+    
+    // Refresh the UI for all 7 layers
+    for (let i = 1; i <= 7; i++) {
+        const container = document.getElementById(`p-${i}`).parentElement;
+        const color = document.getElementById(`c-${i}`).value;
+        container.innerHTML = createPatternPicker(i, color);
+    }
+}
 
 /**
  * Initializes the application, creates the UI rows, and performs the first render.
@@ -64,6 +85,36 @@ function init() {
 }
 
 /**
+ * Creates the HTML for the pattern icons.
+ * Now dynamically detects the correct folder for each icon in the list.
+ */
+function createPatternPicker(layerId, color) {
+    const items = currentPatternSet.map(p => {
+        if (p === 'none') {
+            return `<div class="pattern-item active" onclick="setLayerPattern('${layerId}', 'none', this)">NO</div>`;
+        }
+        
+        // Determine path icon-by-icon
+        const folder = patterns.includes(p) ? 'patterns/vanilla/' : 'patterns/mmb/';
+        const fullPath = `${folder}${p}.png`;
+
+        return `
+        <div class="pattern-item" onclick="setLayerPattern('${layerId}', '${p}', this)">
+            <div class="pattern-icon" style="
+                background-color: ${color}; 
+                -webkit-mask-image: url('${fullPath}'); 
+                mask-image: url('${fullPath}');">
+            </div>
+        </div>`;
+    }).join('');
+
+    return `
+        <div class="pattern-list" id="group-p-${layerId}">${items}</div>
+        <input type="hidden" id="p-${layerId}" value="none">
+    `;
+}
+
+/**
  * Creates the HTML for the color swatches.
  */
 function createColorPicker(layerId, defaultHex) {
@@ -80,31 +131,6 @@ function createColorPicker(layerId, defaultHex) {
     `;
 }
 
-/**
- * Creates the HTML for the pattern icons using CSS masks for coloring.
- */
-function createPatternPicker(layerId, color) {
-    const items = patterns.map(p => {
-        if (p === 'none') {
-            return `<div class="pattern-item active" onclick="setLayerPattern('${layerId}', 'none', this)">NO</div>`;
-        }
-        // Construct the full path
-        const path = `patterns/vanilla/${p}.png`;
-        return `
-        <div class="pattern-item" onclick="setLayerPattern('${layerId}', '${p}', this)">
-            <div class="pattern-icon" style="
-                background-color: ${color}; 
-                -webkit-mask-image: url('${path}'); 
-                mask-image: url('${path}');">
-            </div>
-        </div>`;
-    }).join('');
-
-    return `
-        <div class="pattern-list" id="group-p-${layerId}">${items}</div>
-        <input type="hidden" id="p-${layerId}" value="none">
-    `;
-}
 
 /**
  * Updates the color for a specific layer and reflects it in the UI icons.
@@ -142,28 +168,26 @@ function setLayerPattern(id, name, el) {
 }
 
 /**
- * The main rendering loop. Draws the base then layers 1-7.
+ * Render Function: Handles mixed folders.
  */
 async function render() {
     const canvas = document.getElementById('bannerCanvas');
     const ctx = canvas.getContext('2d');
     
-    // 1. Get Base Color from the hidden input created in init
     const baseInput = document.getElementById('c-base');
     const baseColor = baseInput ? baseInput.value : '#F9FFFE';
 
-    // 2. Clear and Draw Base
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = baseColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 3. Draw Layers 1 through 7
     for (let i = 1; i <= 7; i++) {
         const pName = document.getElementById(`p-${i}`).value;
         const pHex = document.getElementById(`c-${i}`).value;
         
         if (pName !== 'none') {
-            await drawPattern(`patterns/vanilla/${pName}.png`, pHex, ctx);
+            let folder = patterns.includes(pName) ? 'patterns/vanilla/' : 'patterns/mmb/';
+            await drawPattern(`${folder}${pName}.png`, pHex, ctx);
         }
     }
 }
