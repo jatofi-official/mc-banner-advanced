@@ -8,12 +8,12 @@
 <body>
     <div class="app-container">
         <div class="preview-section">
-            <canvas id="bannerCanvas" width="160" height="320"></canvas>
-            <div id="baseColorContainer" class="base-control"></div>
-            
-            <button id="downloadBtn" onclick="downloadBanner()" style="margin-top:10px;">
-                Download Image
-            </button>
+            <div class="canvas-wrapper">
+                <canvas id="bannerCanvas" width="160" height="320"></canvas>
+            </div>
+            <div id="baseColorContainer" class="base-control">
+                </div>
+            <button id="downloadBtn" onclick="downloadBanner()">Download PNG</button>
         </div>
 
         <div class="controls-section">
@@ -21,7 +21,6 @@
             <div id="layerContainer"></div>
         </div>
     </div>
-    
     <script src="script.js"></script>
 </body>
 </html>
