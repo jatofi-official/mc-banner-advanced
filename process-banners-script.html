@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auto Banner Processor</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: #e0e0e0; padding: 40px; line-height: 1.6; }
+        .card { background: #2d2d2d; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); max-width: 600px; margin: auto; }
+        h2 { color: #52ff52; margin-top: 0; }
+        input[type="file"] { margin: 20px 0; display: block; }
+        button { 
+            background: #4caf50; color: white; border: none; padding: 10px 20px; 
+            border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        button:hover { background: #45a049; }
+        #status { margin-top: 15px; font-style: italic; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Banner Batch Processor</h2>
+    <p>Select all your Minecraft pattern PNGs. The script will crop them to the front face (160x320) and download them automatically.</p>
+    
+    <input type="file" id="upload" multiple accept="image/png">
+    <button id="processBtn" style="display:none;">Process & Download All</button>
+    
+    <div id="status"></div>
+</div>
+
+<script>
+    const upload = document.getElementById('upload');
+    const processBtn = document.getElementById('processBtn');
+    const status = document.getElementById('status');
+    let fileList = [];
+
+    upload.addEventListener('change', (e) => {
+        fileList = e.target.files;
+        if(fileList.length > 0) {
+            processBtn.style.display = 'block';
+            status.innerText = `${fileList.length} files ready.`;
+        }
+    });
+
+    processBtn.onclick = async () => {
+        for (let file of fileList) {
+            await processAndDownload(file);
+        }
+        status.innerText = "All files processed!";
+    };
+
+    function processAndDownload(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 160;
+                    canvas.height = 320;
+                    ctx.imageSmoothingEnabled = false;
+
+                    // The Crop: Start at (1,1), take 20x40, scale to 160x320
+                    ctx.drawImage(img, 1, 1, 20, 40, 0, 0, 160, 320);
+
+                    // Trigger Auto-Download
+                    const link = document.createElement('a');
+                    link.download = file.name; // Keeps original name
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    // Small delay to prevent browser from choking on 40 simultaneous downloads
+                    setTimeout(resolve, 100); 
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+</body>
+</html>
