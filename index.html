@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minecraft Banner Maker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="preview-section">
+            <canvas id="bannerCanvas" width="160" height="320"></canvas>
+            <div id="baseColorContainer" class="base-control"></div>
+            
+            <button id="downloadBtn" onclick="downloadBanner()" style="margin-top:10px;">
+                Download Image
+            </button>
+        </div>
+
+        <div class="controls-section">
+            <h2>Layers (Bottom to Top)</h2>
+            <div id="layerContainer"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
