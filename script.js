@@ -18,7 +18,10 @@ const mcPalette = [
 ];
 
 // List your filenames here (ensure these exist in patterns/vanilla/ as .png)
-const patterns = ['none', 'border', 'bricks', 'creeper', 'cross', 'mojang', 'skull', 'stripe_bottom'];
+const patterns = ['none', "base","border","bricks","circle","creeper","cross","curly_border","diagonal_left","diagonal_right","diagonal_up_left","diagonal_up_right","flower","flow","globe","gradient","gradient_up","guster","half_horizontal_bottom","half_horizontal","half_vertical","half_vertical_right","mojang","piglin","rhombus","skull","small_stripes","square_bottom_left","square_bottom_right","square_top_left","square_top_right","straight_cross","stripe_bottom","stripe_center","stripe_downleft","stripe_downright","stripe_left","stripe_middle","stripe_right","stripe_top","triangle_bottom","triangles_bottom","triangles_top","triangle_top"];
+
+const extraPatterns = ["anchor","blam","castle","chequered","circle_tiles","clubs","cogs","companion","crown","curtains","diamonds","double_bars","double_gradient","emoji","eye","fancy","ghast","hammer","hearts","horn","knot","moon","palace","peace","pillager","pumpkin","pyramid","revolution","ribs","shield","spades","sun","sword","tattered","template","tower","trident","villager","yin_yang"];
+
 
 /**
  * Initializes the application, creates the UI rows, and performs the first render.
@@ -43,7 +46,7 @@ function init() {
         div.className = 'layer-row';
         
         // Layer 1 defaults to Black, others to White for better visibility
-        const startColor = (i === 1) ? '#1D1D21' : '#F9FFFE';
+        const startColor = (i === 1) ? '#3C44AA' : '#F9FFFE';
         
         div.innerHTML = `
             <span class="layer-number">${i}</span>
@@ -72,7 +75,7 @@ function createColorPicker(layerId, defaultHex) {
         </div>`).join('');
 
     return `
-        <div class="swatch-group" id="group-c-${layerId}">${swatches}</div>
+        <div class="color-grid-4x4" id="group-c-${layerId}">${swatches}</div>
         <input type="hidden" id="c-${layerId}" value="${defaultHex}">
     `;
 }
